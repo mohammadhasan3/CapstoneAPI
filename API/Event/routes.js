@@ -1,5 +1,6 @@
 const express = require("express");
 const upload = require("../../middleware/multer");
+const passport = require("passport");
 
 const router = express.Router();
 const {
@@ -21,15 +22,29 @@ router.param("eventId", async (req, res, next, eventId) => {
 });
 
 //Event create
-router.post("/", upload.single("image"), eventCreate);
+router.post(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  eventCreate
+);
 
 //Read Event
 router.get("/", eventsList);
 
-// //Update Event
-// router.put("/:eventId", upload.single("image"), eventUpdate);
+//Update Event
+router.put(
+  "/:eventId",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  eventUpdate
+);
 
-// //Delete Event
-// router.delete("/:eventId", eventDelete);
+//Delete Event
+router.delete(
+  "/:eventId",
+  passport.authenticate("jwt", { session: false }),
+  eventDelete
+);
 
 module.exports = router;
