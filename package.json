@@ -1,0 +1,13 @@
+{
+  "name": "CapstoneAPI",
+  "version": "1.0.0",
+  "main": "app.js",
+  "repository": "https://github.com/mohammadhasan3/CapstoneAPI.git",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "scripts": {
+    "start": "nodemon app.js"
+  }
+}
