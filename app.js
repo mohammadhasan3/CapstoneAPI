@@ -15,21 +15,24 @@ const profileRoutes = require("./API/profiles/routes");
 
 // Path
 const path = require("path");
-
+const bodyParser = require("body-parser");
+const eventRoutes = require("./API/Event/routes");
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
+//Routes
+app.use("/events", eventRoutes);
+app.use(userRoutes);
+app.use("/profiles", profileRoutes);
+app.use("/media", express.static(path.join(__dirname, "media")));
+
 // Passport Setup
 app.use(passport.initialize());
 passport.use(localStrategy);
 passport.use(jwtStrategy);
-
-// Routes
-app.use(userRoutes);
-app.use("/profiles", profileRoutes);
 
 // Path Not Found
 app.use((req, res) => {
@@ -38,8 +41,8 @@ app.use((req, res) => {
 
 // Handling Errors
 app.use((err, req, res, next) => {
-  res.status(err.status ?? 500);
-  res.json({ message: err.message ?? "Internal Server Error" });
+  res.status(err.status || 500);
+  res.json({ message: err.message || "Internal Server Error" });
 });
 
 const run = async () => {
