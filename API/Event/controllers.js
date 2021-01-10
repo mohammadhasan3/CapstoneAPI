@@ -16,7 +16,7 @@ exports.eventsList = async (req, res) => {
     const events = await Event.findAll({
       attributes: { exclude: ["createdAt", "updatedAt"] },
     });
-    res.json(events);
+    res.status(201).json(events);
   } catch (err) {
     next(err);
   }

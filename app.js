@@ -23,16 +23,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Passport Setup
+app.use(passport.initialize());
+passport.use(localStrategy);
+passport.use(jwtStrategy);
+
 //Routes
 app.use("/events", eventRoutes);
 app.use(userRoutes);
 app.use("/profiles", profileRoutes);
 app.use("/media", express.static(path.join(__dirname, "media")));
-
-// Passport Setup
-app.use(passport.initialize());
-passport.use(localStrategy);
-passport.use(jwtStrategy);
 
 // Path Not Found
 app.use((req, res) => {
