@@ -53,4 +53,11 @@ db.User.belongsTo(db.Profile, {
   foreignKey: "profileId",
 });
 
+//User has many events - an event belongs to one user
+db.User.hasMany(db.Event, {
+  as: "events",
+  foreignKey: { fieldName: "userId", allowNull: false },
+});
+db.Event.belongsTo(db.User, { as: "user" });
+
 module.exports = db;
