@@ -1,8 +1,12 @@
 const express = require("express");
 const passport = require("passport");
 const router = express.Router();
-const { addFriend } = require("./controllers");
+const { sendRequest } = require("./controllers");
 
-router.get("/", passport.authenticate("jwt", { session: false }), addFriend);
+router.get(
+  "/sendRequest",
+  passport.authenticate("jwt", { session: false }),
+  sendRequest
+);
 
 module.exports = router;
