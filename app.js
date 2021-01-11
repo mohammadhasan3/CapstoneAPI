@@ -12,6 +12,7 @@ const { localStrategy, jwtStrategy } = require("./middleware/passport");
 // Routes
 const userRoutes = require("./API/users/routes");
 const profileRoutes = require("./API/profiles/routes");
+const friendRoutes = require("./API/friends/routes");
 
 // Path
 const path = require("path");
@@ -32,6 +33,7 @@ passport.use(jwtStrategy);
 app.use("/events", eventRoutes);
 app.use(userRoutes);
 app.use("/profiles", profileRoutes);
+app.use("/friend", friendRoutes);
 app.use("/media", express.static(path.join(__dirname, "media")));
 
 // Path Not Found

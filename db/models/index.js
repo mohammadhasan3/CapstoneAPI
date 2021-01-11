@@ -60,4 +60,18 @@ db.User.hasMany(db.Event, {
 });
 db.Event.belongsTo(db.User, { as: "user" });
 
+//User has many to many relationship with itself (Friends)
+db.User.belongsToMany(db.User, {
+  as: "user 1",
+  through: db.Friend,
+  foreignKey: "user1Id",
+  unique: true,
+});
+db.User.belongsToMany(db.User, {
+  as: "user 2",
+  through: db.Friend,
+  foreignKey: "user2Id",
+  unique: true,
+});
+
 module.exports = db;
