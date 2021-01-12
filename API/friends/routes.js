@@ -4,6 +4,9 @@ const router = express.Router();
 const {
   sendRequest,
   withdrawRequest,
+
+  deleteFriend,
+  blockUser,
   acceptRequest,
   declineRequest,
 } = require("./controllers");
@@ -30,6 +33,18 @@ router.post(
   "/sendRequest",
   passport.authenticate("jwt", { session: false }),
   sendRequest
+);
+
+router.delete(
+  "/deleteFriend",
+  passport.authenticate("jwt", { session: false }),
+  deleteFriend
+);
+
+router.put(
+  "/blockUser",
+  passport.authenticate("jwt", { session: false }),
+  blockUser
 );
 
 module.exports = router;
