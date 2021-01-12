@@ -33,7 +33,10 @@ exports.sendRequest = async (req, res, next) => {
   try {
     // This will change to param later
     req.body.user1Id = req.user.id;
+    req.body.user2Id = req.params.user2Id;
     req.body.actionUser = req.user.id;
+
+    console.log(req.body);
     // A condition so that user1 cannot send request to user1
     if (req.body.user1Id != req.body.user2Id) {
       req.body.status = this.PENDING;
