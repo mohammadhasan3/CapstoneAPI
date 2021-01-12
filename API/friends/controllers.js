@@ -55,15 +55,12 @@ exports.withdrawRequest = async (req, res, next) => {
     console.log(relationship[0].actionUser);
     if (relationship) {
       if (relationship[0].actionUser === req.user.id) {
-        await Friend.update(
-          { status: null },
-          {
-            where: {
-              user1Id: req.user.id,
-              user2Id: req.body.user2Id,
-            },
-          }
-        );
+        await Friend.destroy({
+          where: {
+            user1Id: req.user.id,
+            user2Id: req.body.user2Id,
+          },
+        });
         res.status(204).end();
       } else {
         const err = new Error("Unauthorized");
@@ -75,3 +72,5 @@ exports.withdrawRequest = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.acceptRequest = async (req, res, next) => {};
