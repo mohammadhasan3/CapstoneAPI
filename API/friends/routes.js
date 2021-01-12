@@ -9,7 +9,7 @@ router.put(
   withdrawRequest
 );
 
-router.get(
+router.post(
   "/sendRequest",
   passport.authenticate("jwt", { session: false }),
   sendRequest

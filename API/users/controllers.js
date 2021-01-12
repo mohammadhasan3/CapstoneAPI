@@ -57,3 +57,15 @@ exports.signin = async (req, res) => {
   const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
   res.json({ token });
 };
+
+//UsersList
+exports.usersList = async (req, res, next) => {
+  try {
+    const users = await User.findAll({
+      attributes: { include: ["username"] },
+    });
+    res.json(users);
+  } catch (err) {
+    next(err);
+  }
+};
