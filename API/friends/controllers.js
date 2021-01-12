@@ -52,7 +52,6 @@ exports.withdrawRequest = async (req, res, next) => {
     const userId = req.user.id;
     const otherId = req.body.user2Id;
     const relationship = await this.fetchRelationship(userId, otherId, next);
-    console.log(relationship[0].actionUser);
     if (relationship) {
       if (relationship[0].actionUser === req.user.id) {
         await Friend.destroy({
@@ -73,4 +72,62 @@ exports.withdrawRequest = async (req, res, next) => {
   }
 };
 
-exports.acceptRequest = async (req, res, next) => {};
+exports.acceptRequest = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const otherId = req.body.user2Id;
+    const relationship = await this.fetchRelationship(userId, otherId, next);
+    if (relationship) {
+      if (relationship[0].actionUser === req.user.id) {
+        await Friend.update(
+          {
+            status: this.ACCEPTED,
+          },
+          {
+            where: {
+              user1Id: req.user.id,
+              user2Id: req.body.user2Id,
+            },
+          }
+        );
+        res.status(204).end();
+      } else {
+        const err = new Error("Unauthorized");
+        err.status = 401;
+        next(err);
+      }
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.declineRequest = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const otherId = req.body.user2Id;
+    const relationship = await this.fetchRelationship(userId, otherId, next);
+    if (relationship) {
+      if (relationship[0].actionUser === req.user.id) {
+        await Friend.update(
+          {
+            status: this.DECLINED,
+          },
+          {
+            where: {
+              user1Id: req.user.id,
+              user2Id: req.body.user2Id,
+            },
+          }
+        );
+        res.status(204).end();
+      } else {
+        const err = new Error("Unauthorized");
+        err.status = 401;
+        next(err);
+      }
+    }
+  } catch (error) {
+    next(error);
+  }
+};

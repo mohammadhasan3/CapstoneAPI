@@ -1,7 +1,24 @@
 const express = require("express");
 const passport = require("passport");
 const router = express.Router();
-const { sendRequest, withdrawRequest } = require("./controllers");
+const {
+  sendRequest,
+  withdrawRequest,
+  acceptRequest,
+  declineRequest,
+} = require("./controllers");
+
+router.put(
+  "/declineRequest",
+  passport.authenticate("jwt", { session: false }),
+  declineRequest
+);
+
+router.put(
+  "/acceptRequest",
+  passport.authenticate("jwt", { session: false }),
+  acceptRequest
+);
 
 router.put(
   "/withdrawRequest",
