@@ -30,7 +30,7 @@ router.put(
 );
 
 router.post(
-  "/sendRequest",
+  "/sendRequest/:user2Id",
   passport.authenticate("jwt", { session: false }),
   sendRequest
 );
