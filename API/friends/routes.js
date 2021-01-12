@@ -12,19 +12,19 @@ const {
 } = require("./controllers");
 
 router.put(
-  "/declineRequest",
+  "/declineRequest/:user2Id",
   passport.authenticate("jwt", { session: false }),
   declineRequest
 );
 
 router.put(
-  "/acceptRequest",
+  "/acceptRequest/:user2Id",
   passport.authenticate("jwt", { session: false }),
   acceptRequest
 );
 
 router.put(
-  "/withdrawRequest",
+  "/withdrawRequest/:user2Id",
   passport.authenticate("jwt", { session: false }),
   withdrawRequest
 );
@@ -36,13 +36,13 @@ router.post(
 );
 
 router.delete(
-  "/deleteFriend",
+  "/deleteFriend/:user2Id",
   passport.authenticate("jwt", { session: false }),
   deleteFriend
 );
 
 router.put(
-  "/blockUser",
+  "/blockUser/:user2Id",
   passport.authenticate("jwt", { session: false }),
   blockUser
 );
