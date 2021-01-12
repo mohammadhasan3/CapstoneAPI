@@ -14,7 +14,6 @@ exports.fetchRelationship = async (userId, otherId, next) => {
         user2Id: otherId,
       },
     });
-
     if (rel.length === 0) {
       rel = await Friend.findAll({
         where: {
@@ -31,12 +30,10 @@ exports.fetchRelationship = async (userId, otherId, next) => {
 
 exports.sendRequest = async (req, res, next) => {
   try {
-    // This will change to param later
     req.body.user1Id = req.user.id;
     req.body.user2Id = req.params.user2Id;
     req.body.actionUser = req.user.id;
 
-    console.log(req.body);
     // A condition so that user1 cannot send request to user1
     if (req.body.user1Id != req.body.user2Id) {
       req.body.status = this.PENDING;
@@ -53,14 +50,15 @@ exports.sendRequest = async (req, res, next) => {
 exports.withdrawRequest = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const otherId = req.body.user2Id;
+    const otherId = req.params.user2Id;
+
     const relationship = await this.fetchRelationship(userId, otherId, next);
     if (relationship) {
       if (relationship[0].actionUser === req.user.id) {
         await Friend.destroy({
           where: {
             user1Id: req.user.id,
-            user2Id: req.body.user2Id,
+            user2Id: req.params.user2Id,
           },
         });
         res.status(204).end();
@@ -78,7 +76,8 @@ exports.withdrawRequest = async (req, res, next) => {
 exports.acceptRequest = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const otherId = req.body.user2Id;
+    const otherId = req.params.user2Id;
+
     const relationship = await this.fetchRelationship(userId, otherId, next);
     if (relationship) {
       if (relationship[0].actionUser === req.user.id) {
@@ -89,7 +88,7 @@ exports.acceptRequest = async (req, res, next) => {
           {
             where: {
               user1Id: req.user.id,
-              user2Id: req.body.user2Id,
+              user2Id: req.params.user2Id,
             },
           }
         );
@@ -108,21 +107,17 @@ exports.acceptRequest = async (req, res, next) => {
 exports.declineRequest = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const otherId = req.body.user2Id;
+    const otherId = req.params.user2Id;
+
     const relationship = await this.fetchRelationship(userId, otherId, next);
     if (relationship) {
       if (relationship[0].actionUser === req.user.id) {
-        await Friend.update(
-          {
-            status: this.DECLINED,
+        await Friend.destroy({
+          where: {
+            user1Id: req.user.id,
+            user2Id: req.params.user2Id,
           },
-          {
-            where: {
-              user1Id: req.user.id,
-              user2Id: req.body.user2Id,
-            },
-          }
-        );
+        });
         res.status(204).end();
       } else {
         const err = new Error("Unauthorized");
@@ -138,7 +133,8 @@ exports.declineRequest = async (req, res, next) => {
 exports.deleteFriend = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const otherId = req.body.user2Id;
+    const otherId = req.params.user2Id;
+
     const relationship = await this.fetchRelationship(userId, otherId, next);
     console.log(relationship[0].status);
     if (relationship) {
@@ -146,7 +142,7 @@ exports.deleteFriend = async (req, res, next) => {
         await Friend.destroy({
           where: {
             user1Id: req.user.id,
-            user2Id: req.body.user2Id,
+            user2Id: req.params.user2Id,
           },
         });
         res.status(204).end();
@@ -164,7 +160,8 @@ exports.deleteFriend = async (req, res, next) => {
 exports.blockUser = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const otherId = req.body.user2Id;
+    const otherId = req.params.user2Id;
+
     const relationship = await this.fetchRelationship(userId, otherId, next);
     if (relationship.length > 0) {
       if (relationship[0].actionUser === req.user.id) {
@@ -173,7 +170,7 @@ exports.blockUser = async (req, res, next) => {
           {
             where: {
               user1Id: req.user.id,
-              user2Id: req.body.user2Id,
+              user2Id: req.params.user2Id,
             },
           }
         );
@@ -184,7 +181,6 @@ exports.blockUser = async (req, res, next) => {
         next(err);
       }
     } else {
-      // This will change to param later
       req.body.user1Id = req.user.id;
       req.body.actionUser = req.user.id;
       // A condition so that user1 cannot send request to user1
