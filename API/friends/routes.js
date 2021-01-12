@@ -4,9 +4,24 @@ const router = express.Router();
 const {
   sendRequest,
   withdrawRequest,
+
   deleteFriend,
   blockUser,
+  acceptRequest,
+  declineRequest,
 } = require("./controllers");
+
+router.put(
+  "/declineRequest",
+  passport.authenticate("jwt", { session: false }),
+  declineRequest
+);
+
+router.put(
+  "/acceptRequest",
+  passport.authenticate("jwt", { session: false }),
+  acceptRequest
+);
 
 router.put(
   "/withdrawRequest",
@@ -14,7 +29,7 @@ router.put(
   withdrawRequest
 );
 
-router.get(
+router.post(
   "/sendRequest",
   passport.authenticate("jwt", { session: false }),
   sendRequest
