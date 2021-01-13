@@ -5,7 +5,6 @@ exports.ACCEPTED = 1;
 exports.DECLINED = 2;
 exports.BLOCKED = 3;
 
-//FetchRelationship
 exports.fetchRelationship = async (userId, otherId, next) => {
   try {
     let rel = await Friend.findAll({
@@ -25,6 +24,18 @@ exports.fetchRelationship = async (userId, otherId, next) => {
     return rel;
   } catch (error) {
     next(error);
+  }
+};
+
+//FriendsList
+exports.friendsList = async (req, res) => {
+  try {
+    const friends = await Friend.findAll({
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
+    res.json(friends);
+  } catch (err) {
+    next(err);
   }
 };
 
