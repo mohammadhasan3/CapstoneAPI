@@ -7,6 +7,7 @@ exports.BLOCKED = 3;
 
 //FetchRelationship
 exports.fetchRelationship = async (userId, otherId, next) => {
+  // nice work here!
   try {
     let rel = await Friend.findAll({
       where: {
@@ -35,11 +36,16 @@ exports.sendRequest = async (req, res, next) => {
     req.body.actionUser = req.user.id;
 
     // A condition so that user1 cannot send request to user1
+    // It's !== not !=
     if (req.body.user1Id != req.body.user2Id) {
       req.body.status = this.PENDING;
       const newRelationship = await Friend.create(req.body);
-      res.json(newRelationship);
+      res.json(newRelationship); // set status to 201
     } else {
+      // this should be a json response, no?
+      // also, maybe some people are that lonely
+      // you don't wanna alienate them from your app, do you?
+      // 7aram 3alekom, be nice to them!
       console.log("You cannot friend yourself");
     }
   } catch (error) {
@@ -112,6 +118,8 @@ exports.declineRequest = async (req, res, next) => {
     const relationship = await this.fetchRelationship(userId, otherId, next);
     if (relationship) {
       if (relationship[0].actionUser === req.user.id) {
+        // shouldn't you set the status to this.DECLINED
+        // instead of destroying?
         await Friend.destroy({
           where: {
             user1Id: req.user.id,
@@ -136,7 +144,7 @@ exports.deleteFriend = async (req, res, next) => {
     const otherId = req.params.user2Id;
 
     const relationship = await this.fetchRelationship(userId, otherId, next);
-    console.log(relationship[0].status);
+    console.log(relationship[0].status); // remove console logs before pushing
     if (relationship) {
       if (relationship[0].actionUser === req.user.id) {
         await Friend.destroy({

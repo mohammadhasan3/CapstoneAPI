@@ -42,6 +42,14 @@ exports.eventUpdate = async (req, res, next) => {
 
   try {
     if (req.user.id === req.event.userId) {
+      /**
+       * The whole foundEvent thing, along with the condition for it below,
+       * aren't necessary.
+       * The router.param() in the routes file handles this.
+       * In here, you can access the event with req.event.
+       *
+       * Same applies to the delete controller.
+       */
       const foundEvent = await this.fetchEvent(eventId, next);
       if (req.file) {
         req.body.image = `${req.protocol}://${req.get("host")}/media/${
