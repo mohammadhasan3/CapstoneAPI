@@ -1,4 +1,5 @@
 const { User, Friend } = require("../../db/models");
+const Sequelize = require("sequelize");
 
 exports.PENDING = 0;
 exports.ACCEPTED = 1;
@@ -53,6 +54,7 @@ exports.withdrawRequest = async (req, res, next) => {
     const otherId = req.params.user2Id;
 
     const relationship = await this.fetchRelationship(userId, otherId, next);
+    console.log(relationship);
     if (relationship) {
       if (relationship[0].actionUser === req.user.id) {
         await Friend.destroy({
@@ -80,8 +82,8 @@ exports.acceptRequest = async (req, res, next) => {
 
     const relationship = await this.fetchRelationship(userId, otherId, next);
     if (relationship) {
-      if (relationship[0].actionUser === req.user.id) {
-        await Friend.update(
+      if (relationship[0].user2Id === req.user.id) {
+        await relationship[0].update(
           {
             status: this.ACCEPTED,
           },
@@ -92,6 +94,28 @@ exports.acceptRequest = async (req, res, next) => {
             },
           }
         );
+        await User.update(
+          {
+            friends: Sequelize.fn(
+              "array_append",
+              Sequelize.col("friends"),
+              req.user.id
+            ),
+          },
+          { where: { id: relationship[0].user1Id } }
+        );
+
+        await User.update(
+          {
+            friends: Sequelize.fn(
+              "array_append",
+              Sequelize.col("friends"),
+              relationship[0].user1Id
+            ),
+          },
+          { where: { id: req.user.id } }
+        );
+
         res.status(204).end();
       } else {
         const err = new Error("Unauthorized");
@@ -136,15 +160,33 @@ exports.deleteFriend = async (req, res, next) => {
     const otherId = req.params.user2Id;
 
     const relationship = await this.fetchRelationship(userId, otherId, next);
-    console.log(relationship[0].status);
     if (relationship) {
-      if (relationship[0].actionUser === req.user.id) {
-        await Friend.destroy({
-          where: {
-            user1Id: req.user.id,
-            user2Id: req.params.user2Id,
+      if (
+        req.user.id === relationship[0].user1Id ||
+        req.user.id === relationship[0].user2Id
+      ) {
+        await User.update(
+          {
+            friends: Sequelize.fn(
+              "array_remove",
+              Sequelize.col("friends"),
+              relationship[0].user2Id
+            ),
           },
-        });
+          { where: { id: relationship[0].user1Id } }
+        );
+        await User.update(
+          {
+            friends: Sequelize.fn(
+              "array_remove",
+              Sequelize.col("friends"),
+              relationship[0].user1Id
+            ),
+          },
+          { where: { id: relationship[0].user2Id } }
+        );
+
+        await relationship[0].destroy();
         res.status(204).end();
       } else {
         const err = new Error("Unauthorized");
@@ -164,25 +206,31 @@ exports.blockUser = async (req, res, next) => {
 
     const relationship = await this.fetchRelationship(userId, otherId, next);
     if (relationship.length > 0) {
-      if (relationship[0].actionUser === req.user.id) {
-        await Friend.update(
-          { status: this.BLOCKED },
-          {
-            where: {
-              user1Id: req.user.id,
-              user2Id: req.params.user2Id,
-            },
-          }
-        );
-        res.status(204).end();
-      } else {
-        const err = new Error("Unauthorized");
-        err.status = 401;
-        next(err);
-      }
+      await Friend.update(
+        { status: this.BLOCKED },
+        {
+          where: {
+            user1Id: req.user.id,
+            user2Id: req.params.user2Id,
+          },
+        }
+      );
+      await User.update(
+        {
+          blockedBy: Sequelize.fn(
+            "array_append",
+            Sequelize.col("blockedBy"),
+            req.user.id
+          ),
+        },
+        { where: { id: otherId } }
+      );
+
+      res.status(204).end();
     } else {
       req.body.user1Id = req.user.id;
       req.body.actionUser = req.user.id;
+      req.body.user2Id = otherId;
       // A condition so that user1 cannot send request to user1
       if (req.body.user1Id != req.body.user2Id) {
         req.body.status = this.PENDING;
@@ -196,6 +244,17 @@ exports.blockUser = async (req, res, next) => {
             },
           }
         );
+        await User.update(
+          {
+            blockedBy: Sequelize.fn(
+              "array_append",
+              Sequelize.col("blockedBy"),
+              req.user.id
+            ),
+          },
+          { where: { id: otherId } }
+        );
+
         res.status(204).end();
       }
     }
