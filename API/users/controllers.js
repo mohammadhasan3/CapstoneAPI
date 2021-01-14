@@ -63,6 +63,7 @@ exports.usersList = async (req, res, next) => {
   try {
     const users = await User.findAll({
       attributes: {
+        include: ["username", "id"],
         exclude: ["password", "email", "createdAt", "updatedAt"],
       },
     });
