@@ -20,6 +20,18 @@ module.exports = (sequelize, DataTypes) => {
         msg: "Email already exists",
       },
     },
+
+    friends: {
+      type: DataTypes.ARRAY(DataTypes.INTEGER),
+      unique: {
+        args: true,
+        msg: "Cant have the same friend multiple times",
+      },
+    },
+
+    blockedBy: {
+      type: DataTypes.ARRAY(DataTypes.INTEGER),
+    },
   });
   return User;
 };
