@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
 
     blockedBy: {
       type: DataTypes.ARRAY(DataTypes.INTEGER),
+      defaultValue: [],
     },
   });
   return User;
