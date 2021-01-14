@@ -1,5 +1,5 @@
 const { User, Friend } = require("../../db/models");
-const Sequelize = require("sequelize");
+const { Sequelize, Op } = require("sequelize");
 
 exports.PENDING = 0;
 exports.ACCEPTED = 1;
@@ -93,6 +93,10 @@ exports.acceptRequest = async (req, res, next) => {
 
     const relationship = await this.fetchRelationship(userId, otherId, next);
     if (relationship) {
+      if (relationship[0].status === this.ACCEPTED) {
+        res.json("You're already friends");
+        return;
+      }
       if (relationship[0].user2Id === req.user.id) {
         await relationship[0].update(
           {
@@ -105,6 +109,7 @@ exports.acceptRequest = async (req, res, next) => {
             },
           }
         );
+
         await User.update(
           {
             friends: Sequelize.fn(

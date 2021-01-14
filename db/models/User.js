@@ -23,10 +23,7 @@ module.exports = (sequelize, DataTypes) => {
 
     friends: {
       type: DataTypes.ARRAY(DataTypes.INTEGER),
-      unique: {
-        args: true,
-        msg: "Cant have the same friend multiple times",
-      },
+      defaultValue: [],
     },
 
     blockedBy: {
