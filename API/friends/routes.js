@@ -4,12 +4,14 @@ const router = express.Router();
 const {
   sendRequest,
   withdrawRequest,
-
   deleteFriend,
   blockUser,
   acceptRequest,
   declineRequest,
+  friendsList,
 } = require("./controllers");
+
+router.get("/", friendsList);
 
 router.put(
   "/declineRequest/:user2Id",
