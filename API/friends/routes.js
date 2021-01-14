@@ -11,7 +11,7 @@ const {
   friendsList,
 } = require("./controllers");
 
-router.get("/", passport.authenticate("jwt", { session: false }), friendsList);
+router.get("/", friendsList);
 
 router.put(
   "/declineRequest/:user2Id",
