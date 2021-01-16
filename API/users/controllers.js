@@ -30,6 +30,8 @@ exports.signup = async (req, res, next) => {
       image: newProfile.image,
       bio: newProfile.bio,
       profileId: newProfile.id,
+      friends: newUser.friends,
+      blockedBy: newUser.blockedBy,
     };
 
     const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
@@ -52,6 +54,8 @@ exports.signin = async (req, res) => {
     image: foundProfile.image,
     bio: foundProfile.bio,
     profileId: foundProfile.id,
+    friends: user.friends,
+    blockedBy: user.blockedBy,
   };
 
   const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
