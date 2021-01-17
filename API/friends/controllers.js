@@ -151,8 +151,8 @@ exports.declineRequest = async (req, res, next) => {
 
     const relationship = await this.fetchRelationship(userId, otherId, next);
     if (relationship) {
-      if (relationship[0].actionUser === req.user.id) {
-        await Friend.destroy({
+      if (relationship[0].user2Id === req.user.id) {
+        await relationship[0].destroy({
           where: {
             user1Id: req.user.id,
             user2Id: req.params.user2Id,
