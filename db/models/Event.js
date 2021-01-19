@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
 
     tag: {
       type: DataTypes.TEXT,
+      // defaultValue: [],
     },
   });
 
